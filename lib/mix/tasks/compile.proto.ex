@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Compile.Proto do
   def run(_args) do
     {input, options} =
       Mix.Project.config()
-      |> Keyword.get(:proto_compiler, [])
+      |> Keyword.fetch!(:proto_compiler)
       |> Keyword.pop!(:input)
 
     args =
@@ -29,6 +29,9 @@ defmodule Mix.Tasks.Compile.Proto do
 
   defp build_arg({:grpc, false}), do: ""
   defp build_arg({:grpc, true}), do: "--elixir_opt=plugins=grpc"
+
+  defp build_arg({:optional, false}), do: ""
+  defp build_arg({:optional, true}), do: "--experimental_allow_proto3_optional"
 
   defp build_arg({:proto_path, proto_path}) do
     "--proto_path=#{proto_path}"

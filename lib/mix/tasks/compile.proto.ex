@@ -3,6 +3,8 @@ defmodule Mix.Tasks.Compile.Proto do
 
   use Mix.Task.Compiler
 
+  require Logger
+
   @recursive true
 
   @impl Mix.Task.Compiler
@@ -11,6 +13,8 @@ defmodule Mix.Tasks.Compile.Proto do
       Mix.Project.config()
       |> Keyword.fetch!(:proto_compiler)
       |> Keyword.pop!(:input)
+
+    {debug, options} = Keyword.pop(options, :debug, false)
 
     args =
       options
@@ -21,6 +25,19 @@ defmodule Mix.Tasks.Compile.Proto do
       input
       |> List.wrap()
       |> Enum.join(" ")
+
+    case debug do
+      :console ->
+        Logger.debug("args: #{inspect(args)}")
+        Logger.debug("files: #{inspect(files)}")
+
+      :github ->
+        IO.puts("args: #{inspect(args)}")
+        IO.puts("files: #{inspect(files)}")
+
+      _otherwise ->
+        :ok
+    end
 
     Mix.shell().cmd("protoc #{args} #{files}")
 
